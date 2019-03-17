@@ -11,17 +11,24 @@ import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
 class OureaImpl() : ObservableImpl<List<Device>>(ArrayList()), Ourea {
+    companion object {
+        private const val OUREA_PORT = 13232
+        private const val PACKET_SIZE = 1024
+    }
+
     private val executor = Executors.newSingleThreadScheduledExecutor()
-    // @todo 1 figure out why not working in development branch
     private val broadcastConn: TextBaseConn = BroadcastConn(
-        DatagramSocket(),
-        1024,
-        ConstSource(InetAddress.getByName("255.255.255.255")),
-        4521
+        DatagramSocket(OUREA_PORT),
+        PACKET_SIZE,
+        ConstSource(BroadcastAddressFirst().value() ?: InetAddress.getByName("255.255.255.255")),
+        OUREA_PORT
     ) { inputPacket ->
         try {
+            // @todo 2 implement found device registry
             System.out.println(
-                "Recieved: " + String(inputPacket.data)
+                """Recieved: ${String(inputPacket.data)}
+                    |NAME: ${inputPacket.socketAddress}
+                """.trimMargin()
             )
         } catch (ignore: Exception) {
             // ignore packet we don`t recognized.

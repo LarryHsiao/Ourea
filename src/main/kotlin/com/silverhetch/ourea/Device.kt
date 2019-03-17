@@ -1,6 +1,8 @@
 package com.silverhetch.ourea
 
+import java.net.InetAddress
+
 interface Device {
-    fun ip(): String
+    fun ip(): InetAddress
     fun isAlive(): Boolean
 }
