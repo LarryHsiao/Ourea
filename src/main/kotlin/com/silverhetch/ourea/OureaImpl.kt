@@ -1,5 +1,6 @@
 package com.silverhetch.ourea
 
+import com.silverhetch.clotho.connection.broadcast.BroadcastAddressCp
 import com.silverhetch.clotho.connection.broadcast.BroadcastAddressFirst
 import com.silverhetch.clotho.connection.broadcast.BroadcastConn
 import com.silverhetch.clotho.connection.socket.TextBaseConn
@@ -17,19 +18,17 @@ class OureaImpl() : ObservableImpl<List<Device>>(ArrayList()), Ourea {
     }
 
     private val executor = Executors.newSingleThreadScheduledExecutor()
+    private val broadDest = BroadcastAddressFirst().value()
     private val broadcastConn: TextBaseConn = BroadcastConn(
         DatagramSocket(OUREA_PORT),
         PACKET_SIZE,
-        ConstSource(BroadcastAddressFirst().value() ?: InetAddress.getByName("255.255.255.255")),
+        ConstSource(broadDest ?: InetAddress.getByName("255.255.255.255")),
         OUREA_PORT
     ) { inputPacket ->
         try {
-            // @todo 2 implement found device registry
-            System.out.println(
-                """Recieved: ${String(inputPacket.data)}
-                    |NAME: ${inputPacket.socketAddress}
-                """.trimMargin()
-            )
+            if (inputPacket.address.toString() != broadDest.toString()){
+
+            }
         } catch (ignore: Exception) {
             // ignore packet we don`t recognized.
         }
