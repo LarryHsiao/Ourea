@@ -1,6 +1,7 @@
 package com.silverhetch.ourea
 
 import com.silverhetch.clotho.connection.broadcast.Target
+import com.silverhetch.ourea.register.Register
 import java.net.InetAddress
 
 /**
@@ -8,7 +9,8 @@ import java.net.InetAddress
  *
  */
 class DeviceImpl(
-    private val inetAddress: Target,
+    private val register: Register,
+    private val target: Target,
     private val lastSeem: Long = System.currentTimeMillis()
 ) : Device {
     companion object {
@@ -16,7 +18,7 @@ class DeviceImpl(
     }
 
     override fun ip(): InetAddress {
-        return inetAddress.interfaceInetAddress()
+        return target.interfaceInetAddress()
     }
 
     override fun isAlive(): Boolean {
@@ -24,7 +26,6 @@ class DeviceImpl(
     }
 
     override fun isRegistered(): Boolean {
-        // @todo #1 implement with register model
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return register.isRegistered(target.name())
     }
 }

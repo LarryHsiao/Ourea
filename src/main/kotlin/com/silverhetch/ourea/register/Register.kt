@@ -1,5 +1,21 @@
 package com.silverhetch.ourea.register
 
+/**
+ * Register model
+ */
 interface Register {
-    // @todo #2 Design the register flow and design what information should be stored
+    /**
+     * The auth code for the communication
+     */
+    fun authCode(id: String): String
+
+    /**
+     * Register for auth code
+     */
+    fun register(id: String, auth: String)
+
+    /**
+     * Determine if the device is registered before
+     */
+    fun isRegistered(id: String): Boolean
 }

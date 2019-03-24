@@ -1,11 +1,14 @@
 package com.silverhetch.ourea
 
-import com.silverhetch.clotho.connection.broadcast.BroadcastAddressCp
 import com.silverhetch.clotho.connection.broadcast.BroadcastAddressFirst
 import com.silverhetch.clotho.connection.broadcast.BroadcastConn
 import com.silverhetch.clotho.connection.socket.TextBaseConn
+import com.silverhetch.clotho.database.sqlite.SQLiteConn
 import com.silverhetch.clotho.observable.ObservableImpl
 import com.silverhetch.clotho.source.ConstSource
+import com.silverhetch.clotho.storage.Ceres
+import com.silverhetch.clotho.storage.DbCeres
+import com.silverhetch.ourea.register.CeresRegister
 import java.net.DatagramSocket
 import java.net.InetAddress
 import java.util.concurrent.Executors
@@ -17,6 +20,11 @@ class OureaImpl() : ObservableImpl<Map<String, Device>>(HashMap()), Ourea {
         private const val PACKET_SIZE = 1024
     }
 
+    private val ceres: Ceres = DbCeres(
+        SQLiteConn(
+            "ourea.db"
+        )
+    )
     private val deviceMap = HashMap<String, Device>()
     private val executor = Executors.newSingleThreadScheduledExecutor()
     private val broadDest = BroadcastAddressFirst().value()
@@ -29,7 +37,10 @@ class OureaImpl() : ObservableImpl<Map<String, Device>>(HashMap()), Ourea {
         try {
             broadDest?.run {
                 if (inputPacket.address.toString() != broadDest.interfaceInetAddress().toString()) {
-                    deviceMap[this.interfaceInetAddress().toString()] = DeviceImpl(this)
+                    deviceMap[this.interfaceInetAddress().toString()] = DeviceImpl(
+                        CeresRegister(ceres),
+                        this
+                    )
                     value = deviceMap
                     notifyObservers(value)
                 }
