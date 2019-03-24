@@ -1,5 +1,6 @@
 package com.silverhetch.ourea
 
+import com.silverhetch.clotho.connection.broadcast.Target
 import java.net.InetAddress
 
 /**
@@ -7,7 +8,7 @@ import java.net.InetAddress
  *
  */
 class DeviceImpl(
-    private val inetAddress: InetAddress,
+    private val inetAddress: Target,
     private val lastSeem: Long = System.currentTimeMillis()
 ) : Device {
     companion object {
@@ -15,7 +16,7 @@ class DeviceImpl(
     }
 
     override fun ip(): InetAddress {
-        return inetAddress
+        return inetAddress.interfaceInetAddress()
     }
 
     override fun isAlive(): Boolean {

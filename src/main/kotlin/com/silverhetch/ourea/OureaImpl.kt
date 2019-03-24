@@ -11,23 +11,28 @@ import java.net.InetAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
-class OureaImpl() : ObservableImpl<List<Device>>(ArrayList()), Ourea {
+class OureaImpl() : ObservableImpl<Map<String, Device>>(HashMap()), Ourea {
     companion object {
         private const val OUREA_PORT = 13232
         private const val PACKET_SIZE = 1024
     }
 
+    private val deviceMap = HashMap<String, Device>()
     private val executor = Executors.newSingleThreadScheduledExecutor()
     private val broadDest = BroadcastAddressFirst().value()
     private val broadcastConn: TextBaseConn = BroadcastConn(
         DatagramSocket(OUREA_PORT),
         PACKET_SIZE,
-        ConstSource(broadDest ?: InetAddress.getByName("255.255.255.255")),
+        ConstSource(broadDest?.broadcastAddress() ?: InetAddress.getByName("255.255.255.255")),
         OUREA_PORT
     ) { inputPacket ->
         try {
-            if (inputPacket.address.toString() != broadDest.toString()){
-
+            broadDest?.run {
+                if (inputPacket.address.toString() != broadDest.interfaceInetAddress().toString()) {
+                    deviceMap[this.interfaceInetAddress().toString()] = DeviceImpl(this)
+                    value = deviceMap
+                    notifyObservers(value)
+                }
             }
         } catch (ignore: Exception) {
             // ignore packet we don`t recognized.
