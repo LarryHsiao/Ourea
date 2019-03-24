@@ -22,4 +22,9 @@ class DeviceImpl(
     override fun isAlive(): Boolean {
         return System.currentTimeMillis() - lastSeem < VALID_DURATION
     }
+
+    override fun isRegistered(): Boolean {
+        // @todo #1 implement with register model
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 }
