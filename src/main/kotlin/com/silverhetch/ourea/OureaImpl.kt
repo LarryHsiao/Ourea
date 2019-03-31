@@ -33,7 +33,7 @@ class OureaImpl(private val ceres: Ceres) : ObservableImpl<Map<String, Device>>(
                 if (inputPacket.address.toString() != broadDest.interfaceInetAddress().toString()) {
                     deviceMap[this.interfaceInetAddress().toString()] = DeviceImpl(
                         CeresRegister(ceres),
-                        this
+                        inputPacket.address
                     )
                     value = deviceMap
                     notifyObservers(value)

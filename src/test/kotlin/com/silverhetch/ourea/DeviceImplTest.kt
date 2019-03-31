@@ -16,7 +16,7 @@ class DeviceImplTest {
             InetAddress.getByName("127.0.0.1"),
             DeviceImpl(
                 PhantomRegister(),
-                PhantomTarget(),
+                InetAddress.getByName("127.0.01"),
                 System.currentTimeMillis()
             ).ip()
         )
@@ -27,7 +27,7 @@ class DeviceImplTest {
         assertTrue(
             DeviceImpl(
                 PhantomRegister(),
-                PhantomTarget(),
+                InetAddress.getByName("127.0.01"),
                 System.currentTimeMillis()
             ).isAlive()
         )
@@ -38,7 +38,7 @@ class DeviceImplTest {
         assertFalse(
             DeviceImpl(
                 PhantomRegister(),
-                PhantomTarget(),
+                InetAddress.getByName("127.0.01"),
                 System.currentTimeMillis() - 5001
             ).isAlive()
         )

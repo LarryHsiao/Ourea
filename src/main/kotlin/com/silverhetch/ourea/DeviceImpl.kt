@@ -10,7 +10,7 @@ import java.net.InetAddress
  */
 class DeviceImpl(
     private val register: Register,
-    private val target: Target,
+    private val address: InetAddress,
     private val lastSeem: Long = System.currentTimeMillis()
 ) : Device {
     companion object {
@@ -18,7 +18,7 @@ class DeviceImpl(
     }
 
     override fun ip(): InetAddress {
-        return target.interfaceInetAddress()
+        return address
     }
 
     override fun isAlive(): Boolean {
@@ -26,6 +26,6 @@ class DeviceImpl(
     }
 
     override fun isRegistered(): Boolean {
-        return register.isRegistered(target.name())
+        return register.isRegistered(address.hostName)
     }
 }
