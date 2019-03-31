@@ -14,17 +14,11 @@ import java.net.InetAddress
 import java.util.concurrent.Executors
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
-class OureaImpl() : ObservableImpl<Map<String, Device>>(HashMap()), Ourea {
+class OureaImpl(private val ceres: Ceres) : ObservableImpl<Map<String, Device>>(HashMap()), Ourea {
     companion object {
         private const val OUREA_PORT = 13232
         private const val PACKET_SIZE = 1024
     }
-
-    private val ceres: Ceres = DbCeres(
-        SQLiteConn(
-            "ourea.db"
-        )
-    )
     private val deviceMap = HashMap<String, Device>()
     private val executor = Executors.newSingleThreadScheduledExecutor()
     private val broadDest = BroadcastAddressFirst().value()
