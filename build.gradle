@@ -2,15 +2,26 @@ buildscript{
     repositories{
         maven { url "https://dl.bintray.com/larryhsiao/Elizabeth" }
     }
+
+    dependencies {
+    }
 }
 
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.3.21'
     id 'com.silverhetch.thea' version '1.2.1'
+    id "com.jfrog.bintray" version "1.8.4"
 }
 
+apply plugin: 'java-library'
+apply plugin: 'kotlin'
+
+def oureaVersion = thea.version.versionByFlavor("").versionName()
+
 group 'com.silverhetch'
-version '0.0.1'
+version oureaVersion
+
+println(thea.versionIndicator.apply(""))
 
 repositories {
     mavenCentral()
@@ -23,9 +34,59 @@ dependencies {
     testImplementation 'junit:junit:4.12'
 }
 
+jar {
+    from sourceSets.main.allSource
+}
+
 compileKotlin {
     kotlinOptions.jvmTarget = "1.8"
 }
 compileTestKotlin {
     kotlinOptions.jvmTarget = "1.8"
+}
+
+bintray {
+    user = 'larryhsiao'
+    key = System.getenv('BINTRAY_KEY')
+    publications = ['release']
+    publish = true
+    override = true
+    pkg {
+        repo = 'Elizabeth'
+        name = 'Ourea'
+        userOrg = 'larryhsiao'
+        licenses = ['MIT']
+        vcsUrl = 'https://github.com/LarryHsiao/Ourea.git'
+        version {
+            name = oureaVersion
+            gpg {
+                sign = true
+                passphrase = System.getenv('BINTRAY_PASSPHRASE')
+            }
+        }
+    }
+}
+
+task sourcesJar(type: Jar) {
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+task javadocJar(type: Jar) {
+    from javadoc
+    classifier = 'javadoc'
+}
+
+apply plugin: 'maven-publish'
+publishing {
+    publications {
+        release(MavenPublication) {
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
+            groupId 'com.silverhetch'
+            artifactId 'ourea'
+            version oureaVersion
+        }
+    }
 }
