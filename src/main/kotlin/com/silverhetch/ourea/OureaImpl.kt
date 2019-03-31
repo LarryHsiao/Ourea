@@ -31,6 +31,8 @@ class OureaImpl(private val ceres: Ceres) : ObservableImpl<Map<String, Device>>(
         try {
             broadDest?.run {
                 if (inputPacket.address.toString() != broadDest.interfaceInetAddress().toString()) {
+                    // @todo #1 device recognition
+                    // @todo #2 device authorization
                     deviceMap[this.interfaceInetAddress().toString()] = DeviceImpl(
                         CeresRegister(ceres),
                         inputPacket.address
